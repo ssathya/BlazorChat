@@ -1,0 +1,22 @@
+﻿@page "/chat"
+@rendermode InteractiveServer
+<PageTitle>Chat</PageTitle>
+
+
+<card class="h-50">
+    <cardHeader>Chat History</cardHeader>
+    <cardBody TextAlignment="TextAlignment.Justified">
+        <div class="col-12 d-flex flex-column h-25">
+            <div class="flex-grow-1 overflow-auto"
+                 style="height: 25vh; overflow-y: auto">
+                @((MarkupString)@responseToDisplay.ToString())
+            </div>
+            @*  <textarea class="form-control" rows="15" readonly value="@((MarkupString)@responseToDisplay)"></textarea>  *@
+            
+        </div>
+    </cardBody>
+</card>
+<br />
+<textarea class="form-control" rows="9" @bind=@UserInput />
+<br />
+<button Color="Color.Success" @onclick="OnSubmitClick">Submit</button>
