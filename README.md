@@ -15,7 +15,7 @@ Armed with newfound enthusiasm, I embarked on my own coding voyage. Armed with V
 
 2. **Weather Whispers**: Next, I summoned weather data. The app became a meteorologist, whispering forecasts to anyone who cared to listen. Rain or shine, it was there—a reliable companion in the ever-changing climate of life.
 
-3. **Stock Market Sorcery**: Ah, the stock market—an enigma wrapped in numbers. My app, still in its cocoon, was learning to decode this cryptic language. Soon, it would reveal stock quotes, empowering users with financial insights. (Note: US stocks only for now, but who knows what the future holds?)
+3. **Stock Market Sorcery**: This is in alpha form; i.e., it gets the stock quotes and presents it well but needs improvement in presentation. (Note: US stocks only for now, but who knows what the future holds?)
 
 ## *The Road Ahead*
 

@@ -27,6 +27,7 @@ catch (ArgumentException ex)
 builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<NewsPlugin>(serviceProvider: sp));
 builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<ArchivePlugin>(serviceProvider: sp));
 builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<WeatherPlugin>(serviceProvider: sp));
+builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<StockServicePlugin>(serviceProvider: sp));
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
