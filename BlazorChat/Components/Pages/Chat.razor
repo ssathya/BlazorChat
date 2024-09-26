@@ -19,4 +19,14 @@
 <br />
 <textarea class="form-control" rows="9" @bind=@UserInput />
 <br />
-<button Color="Color.Success" @onclick="OnSubmitClick">Submit</button>
+<button type="button" class="btn btn-success" @onclick="OnSubmitClick">Submit</button>
+<br />
+<p><strong>News:</strong></p>
+<ul>
+    <li>To get the latest headline news, ask: &quot;Please provide me with the headline news.&quot;</li>
+    <li>For specific topics, replace &quot;headline&quot; with &quot;Business,&quot; &quot;Technology,&quot; &quot;Sports,&quot; &quot;Science,&quot; or &quot;Health.&quot; For example: &quot;Please give me the latest technology news.&quot;</li>
+</ul>
+<p><strong>Weather:</strong></p>
+<ul>
+    <li>To check the weather in a particular city, ask: &quot;How&#39;s the weather in [City], [State], [Country]?&quot; If you&#39;re in the United States, you can omit the country. For instance: &quot;How&#39;s New York, NY weather?&quot;</li>
+</ul>

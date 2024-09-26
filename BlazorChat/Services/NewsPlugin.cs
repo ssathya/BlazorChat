@@ -28,7 +28,7 @@ public class NewsPlugin
     public List<string> GetCategories(Kernel kernel)
     {
         List<string> categories = [
-            "Headlines", "World", "Business","Technology", "Sports","Science","Health"
+            "Headline", "World", "Business","Technology", "Sports","Science","Health"
             ];
         return categories;
     }
