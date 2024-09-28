@@ -24,11 +24,7 @@ catch (ArgumentException ex)
     Console.WriteLine(ex.Message);
     throw;
 }
-builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<NewsPlugin>(serviceProvider: sp));
-builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<ArchivePlugin>(serviceProvider: sp));
-builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<WeatherPlugin>(serviceProvider: sp));
-builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<StockServicePlugin>(serviceProvider: sp));
-builder.Services.AddHttpClient();
+SetupDependency(builder);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,3 +44,13 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+static void SetupDependency(WebApplicationBuilder builder)
+{
+    builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<NewsPlugin>(serviceProvider: sp));
+    builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<ArchivePlugin>(serviceProvider: sp));
+    builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<WeatherPlugin>(serviceProvider: sp));
+    builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<StockServicePlugin>(serviceProvider: sp));
+    builder.Services.AddScoped(sp => KernelPluginFactory.CreateFromType<CurrencyService>(serviceProvider: sp));
+    builder.Services.AddHttpClient();
+}

@@ -23,15 +23,21 @@ public partial class StockPrice
     protected StringBuilder responseToDisplay = new();
     protected string UserInput = string.Empty;
     protected OpenAIPromptExecutionSettings? settings;
+    protected MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
 
     protected override void OnInitialized()
     {
         History.AddSystemMessage("You are a friendly and jovial assistant who is not shy about asking for clarification. " +
             " When the user requests you for the price for a Ticker you will get stock quote for the ticker."+
-            " Your response will be detailed and provide all information regarding the ticker's current quote.");
+            " Your response will be detailed and provide all information regarding the ticker's current quote." +
+            " If asked to convert currency you will identify the target currency, base currency, and amount to " +
+            " convert and perform conversion");
         settings = new()
         {
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+            Temperature = 0.2,
+            TopP = 0.4
         };
     }
     protected async Task OnSubmitClick()
@@ -49,7 +55,8 @@ public partial class StockPrice
         {
             tmpBuffer.Append(chunk);
         }
-        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString()));
+
+        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString(),pipeline));
         responseToDisplay.Append("\n<br/>");
         StateHasChanged();
 

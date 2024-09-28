@@ -17,6 +17,8 @@ Armed with newfound enthusiasm, I embarked on my own coding voyage. Armed with V
 
 3. **Stock Market Sorcery**: This is in alpha form; i.e., it gets the stock quotes and presents it well but needs improvement in presentation. (Note: US stocks only for now, but who knows what the future holds?)
 
+4. **Currency Conversion**: As this feature resembled stock quotes, I figured I’d implement it too.
+
 ## *The Road Ahead*
 
 But wait, there's more! My journey doesn't end here. The horizon beckons with promises of even greater feats:
