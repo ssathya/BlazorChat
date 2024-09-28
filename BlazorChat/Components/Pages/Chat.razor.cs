@@ -23,6 +23,7 @@ public partial class Chat
     protected StringBuilder responseToDisplay = new();
     protected string UserInput = string.Empty;
     protected OpenAIPromptExecutionSettings? settings;
+    protected MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
     protected override void OnInitialized()
     {
@@ -55,7 +56,7 @@ public partial class Chat
         {
             tmpBuffer.Append(chunk);
         }
-        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString()));
+        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString(),pipeline));
         responseToDisplay.Append("\n<br/>");
         StateHasChanged();
 
