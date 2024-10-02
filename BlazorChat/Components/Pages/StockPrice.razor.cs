@@ -48,7 +48,9 @@ public partial class StockPrice
             return;
         }
         History.AddUserMessage(UserInput);
+        responseToDisplay.Append("""<div class="badge text-bg-secondary"> """);
         responseToDisplay.AppendLine(Markdown.ToHtml($"> *{UserInput}*\n\n"));
+        responseToDisplay.Append("</div>");
         StringBuilder tmpBuffer = new();
         var chunks = ChatCompletionService!.GetStreamingChatMessageContentsAsync(History, settings!, Kernel!);
         await foreach (var chunk in chunks)
