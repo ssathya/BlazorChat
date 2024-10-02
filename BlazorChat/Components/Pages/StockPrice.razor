@@ -17,23 +17,29 @@
 <textarea class="form-control" rows="9" @bind=@UserInput />
 <br />
 <button type="button" class="btn btn-success" @onclick="OnSubmitClick">Submit</button>
-<br/>
-<p>You can request stock quotes by asking, &quot;Please get me the quote for MSFT&quot; or &quot;Please get me the stock price for IBM, C, JPM, and TSLA; please present the values in a tabular format.&quot;</p>
-<p>For currency conversions, you can ask, &quot;Please convert 200 USD to INR, ZAR, and SZL&quot;. You can also get the values in a table by asking, &quot;Convert 200 USD to INR, ZAR, and SZL and present it as a table&quot;.</p>
-<p>Certainly! Let&#39;s refine that text to make it clear and concise:</p>
-<ol>
-    <li>
-        <p>To request stock quotes:</p>
-        <ul>
-            <li>You can say, &quot;Please get me the quote for MSFT.&quot;</li>
-            <li>Or, if you want multiple stock prices in a tabular format, say, &quot;Please get me the stock price for IBM, C, JPM, and TSLA; please present the values in a tabular format.&quot;</li>
-        </ul>
-    </li>
-    <li>
-        <p>For currency conversions:</p>
-        <ul>
-            <li>You can ask, &quot;Please convert 200 USD to INR, ZAR, and SZL.&quot;</li>
-            <li>If you&#39;d like the values presented in a table, say, &quot;Convert 200 USD to INR, ZAR, and SZL and present it as a table.&quot;</li>
-        </ul>
-    </li>
-</ol>
+<button type="button" class="btn btn-primary" data-bs-toggle="collapse"
+        data-bs-target="#helpMsg" aria-expanded="false" aria-controls="helpMsg">
+    Help
+</button>
+<br />
+<div class="collapse" id="helpMsg">
+    <p>You can request stock quotes by asking, &quot;Please get me the quote for MSFT&quot; or &quot;Please get me the stock price for IBM, C, JPM, and TSLA; please present the values in a tabular format.&quot;</p>
+    <p>For currency conversions, you can ask, &quot;Please convert 200 USD to INR, ZAR, and SZL&quot;. You can also get the values in a table by asking, &quot;Convert 200 USD to INR, ZAR, and SZL and present it as a table&quot;.</p>
+    <p>Certainly! Let&#39;s refine that text to make it clear and concise:</p>
+    <ol>
+        <li>
+            <p>To request stock quotes:</p>
+            <ul>
+                <li>You can say, &quot;Please get me the quote for MSFT.&quot;</li>
+                <li>Or, if you want multiple stock prices in a tabular format, say, &quot;Please get me the stock price for IBM, C, JPM, and TSLA; please present the values in a tabular format.&quot;</li>
+            </ul>
+        </li>
+        <li>
+            <p>For currency conversions:</p>
+            <ul>
+                <li>You can ask, &quot;Please convert 200 USD to INR, ZAR, and SZL.&quot;</li>
+                <li>If you&#39;d like the values presented in a table, say, &quot;Convert 200 USD to INR, ZAR, and SZL and present it as a table.&quot;</li>
+            </ul>
+        </li>
+    </ol>
+</div>
