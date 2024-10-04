@@ -49,7 +49,7 @@ public partial class Chat
             return;
         }
         History.AddUserMessage(UserInput);
-        responseToDisplay.Append("""<div class="badge text-bg-secondary"> """);
+        responseToDisplay.Append("""<div class="text-end badge text-bg-primary text-wrap"> """);
         responseToDisplay.AppendLine(Markdown.ToHtml($"> *{UserInput}*\n\n"));
         responseToDisplay.Append("</div>");
         StringBuilder tmpBuffer = new();
