@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BlazorChat.Models;
+namespace Models.AppModels;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
 public class AirQuality
@@ -33,25 +33,25 @@ public class AirQuality
 public class Alerts
 {
     [JsonPropertyName("alert")]
-    public List<object> Alert { get; set; }
+    public List<object> Alert { get; set; } = [];
 }
 
 public class Astro
 {
     [JsonPropertyName("sunrise")]
-    public string Sunrise { get; set; }
+    public string Sunrise { get; set; } = string.Empty;
 
     [JsonPropertyName("sunset")]
-    public string Sunset { get; set; }
+    public string Sunset { get; set; } = string.Empty;
 
     [JsonPropertyName("moonrise")]
-    public string Moonrise { get; set; }
+    public string Moonrise { get; set; } = string.Empty;
 
     [JsonPropertyName("moonset")]
-    public string Moonset { get; set; }
+    public string Moonset { get; set; } = string.Empty;
 
     [JsonPropertyName("moon_phase")]
-    public string MoonPhase { get; set; }
+    public string MoonPhase { get; set; } = string.Empty;
 
     [JsonPropertyName("moon_illumination")]
     public int MoonIllumination { get; set; }
@@ -66,10 +66,10 @@ public class Astro
 public class Condition
 {
     [JsonPropertyName("text")]
-    public string Text { get; set; }
+    public string Text { get; set; } = string.Empty;
 
     [JsonPropertyName("icon")]
-    public string Icon { get; set; }
+    public string Icon { get; set; } = string.Empty;
 
     [JsonPropertyName("code")]
     public int Code { get; set; }
@@ -81,7 +81,7 @@ public class Current
     public int LastUpdatedEpoch { get; set; }
 
     [JsonPropertyName("last_updated")]
-    public string LastUpdated { get; set; }
+    public string LastUpdated { get; set; } = string.Empty;
 
     [JsonPropertyName("temp_c")]
     public double TempC { get; set; }
@@ -93,7 +93,7 @@ public class Current
     public int IsDay { get; set; }
 
     [JsonPropertyName("condition")]
-    public Condition Condition { get; set; }
+    public Condition Condition { get; set; } = new();
 
     [JsonPropertyName("wind_mph")]
     public double WindMph { get; set; }
@@ -105,7 +105,7 @@ public class Current
     public int WindDegree { get; set; }
 
     [JsonPropertyName("wind_dir")]
-    public string WindDir { get; set; }
+    public string WindDir { get; set; } = string.Empty;
 
     [JsonPropertyName("pressure_mb")]
     public double PressureMb { get; set; }
@@ -165,7 +165,7 @@ public class Current
     public double GustKph { get; set; }
 
     [JsonPropertyName("air_quality")]
-    public AirQuality AirQuality { get; set; }
+    public AirQuality AirQuality { get; set; } = new();
 }
 
 public class Day
@@ -225,7 +225,7 @@ public class Day
     public int DailyChanceOfSnow { get; set; }
 
     [JsonPropertyName("condition")]
-    public Condition Condition { get; set; }
+    public Condition Condition { get; set; } = new();
 
     [JsonPropertyName("uv")]
     public double Uv { get; set; }
@@ -234,25 +234,25 @@ public class Day
 public class Forecast
 {
     [JsonPropertyName("forecastday")]
-    public List<Forecastday> Forecastday { get; set; }
+    public List<Forecastday> Forecastday { get; set; } = new();
 }
 
 public class Forecastday
 {
     [JsonPropertyName("date")]
-    public string Date { get; set; }
+    public string Date { get; set; } = string.Empty;
 
     [JsonPropertyName("date_epoch")]
     public int DateEpoch { get; set; }
 
     [JsonPropertyName("day")]
-    public Day Day { get; set; }
+    public Day Day { get; set; } = new();
 
     [JsonPropertyName("astro")]
-    public Astro Astro { get; set; }
+    public Astro Astro { get; set; } = new();
 
     [JsonPropertyName("hour")]
-    public List<Hour> Hour { get; set; }
+    public List<Hour> Hour { get; set; } = [];
 }
 
 public class Hour
@@ -261,7 +261,7 @@ public class Hour
     public int TimeEpoch { get; set; }
 
     [JsonPropertyName("time")]
-    public string Time { get; set; }
+    public string Time { get; set; } = string.Empty;
 
     [JsonPropertyName("temp_c")]
     public double TempC { get; set; }
@@ -273,7 +273,7 @@ public class Hour
     public int IsDay { get; set; }
 
     [JsonPropertyName("condition")]
-    public Condition Condition { get; set; }
+    public Condition Condition { get; set; } = new();
 
     [JsonPropertyName("wind_mph")]
     public double WindMph { get; set; }
@@ -285,7 +285,7 @@ public class Hour
     public int WindDegree { get; set; }
 
     [JsonPropertyName("wind_dir")]
-    public string WindDir { get; set; }
+    public string WindDir { get; set; } = string.Empty;
 
     [JsonPropertyName("pressure_mb")]
     public double PressureMb { get; set; }
@@ -363,13 +363,13 @@ public class Hour
 public class Location
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [JsonPropertyName("region")]
-    public string Region { get; set; }
+    public string Region { get; set; } = string.Empty;
 
     [JsonPropertyName("country")]
-    public string Country { get; set; }
+    public string Country { get; set; } = string.Empty;
 
     [JsonPropertyName("lat")]
     public double Lat { get; set; }
@@ -378,26 +378,26 @@ public class Location
     public double Lon { get; set; }
 
     [JsonPropertyName("tz_id")]
-    public string TzId { get; set; }
+    public string TzId { get; set; } = string.Empty;
 
     [JsonPropertyName("localtime_epoch")]
     public int LocaltimeEpoch { get; set; }
 
     [JsonPropertyName("localtime")]
-    public string Localtime { get; set; }
+    public string Localtime { get; set; } = string.Empty;
 }
 
 public class Weather
 {
     [JsonPropertyName("location")]
-    public Location Location { get; set; }
+    public Location Location { get; set; } = new();
 
     [JsonPropertyName("current")]
-    public Current Current { get; set; }
+    public Current Current { get; set; } = new();
 
     [JsonPropertyName("forecast")]
-    public Forecast Forecast { get; set; }
+    public Forecast Forecast { get; set; } = new();
 
     [JsonPropertyName("alerts")]
-    public Alerts Alerts { get; set; }
+    public Alerts Alerts { get; set; } = new();
 }

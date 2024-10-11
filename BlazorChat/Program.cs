@@ -1,6 +1,8 @@
 using BlazorChat.Components;
 using BlazorChat.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
+using Models.DBModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +26,14 @@ catch (ArgumentException ex)
     Console.WriteLine(ex.Message);
     throw;
 }
+//Connect to Database
+string connectionString = config["ConnectionString:DefaultConnection"] ?? "";
+builder.Services.AddDbContextFactory<BlazorChatContext>(options =>
+{
+    options.UseNpgsql(connectionString);
+});
 SetupDependency(builder);
+builder.Services.AddSingleton<IFunctionInvocationFilter>(new RetryFilter(config["AzureAi:ModelId"]!));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

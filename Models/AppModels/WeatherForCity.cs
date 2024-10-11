@@ -1,4 +1,4 @@
-﻿namespace BlazorChat.Models;
+﻿namespace Models.AppModels;
 
 public class WeatherForCity
 {

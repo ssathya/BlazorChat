@@ -1,5 +1,5 @@
-﻿using BlazorChat.Models;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
+using Models.AppModels;
 using System.ComponentModel;
 using System.Text.Json;
 

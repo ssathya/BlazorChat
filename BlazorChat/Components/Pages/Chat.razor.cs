@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Polly;
+using Polly.Retry;
 using System.Text;
 
 namespace BlazorChat.Components.Pages;
@@ -53,15 +55,30 @@ public partial class Chat
         responseToDisplay.AppendLine(Markdown.ToHtml($"> *{UserInput}*\n\n"));
         responseToDisplay.Append("</div>");
         StringBuilder tmpBuffer = new();
-        var chunks = ChatCompletionService!.GetStreamingChatMessageContentsAsync(History, settings!, Kernel!);
+        var chunks = await retryPolicy.ExecuteAsync(() =>
+        {
+            return Task.FromResult(ChatCompletionService!.GetStreamingChatMessageContentsAsync(History, settings!, Kernel!));
+        });
+        //var chunks = ChatCompletionService!.GetStreamingChatMessageContentsAsync(History, settings!, Kernel!);
         await foreach (var chunk in chunks)
         {
             tmpBuffer.Append(chunk);
         }
-        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString(),pipeline));
+        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString(), pipeline));
         responseToDisplay.Append("\n<br/>");
         StateHasChanged();
 
         History.AddAssistantMessage(tmpBuffer.ToString());
     }
+
+    private static readonly AsyncRetryPolicy retryPolicy = Policy
+        .Handle<Exception>()
+        .WaitAndRetryAsync(
+            retryCount: 3, // Number of retries
+            sleepDurationProvider: _ => TimeSpan.FromSeconds(40), // Wait time between retries
+            onRetry: (exception, timeSpan, retryCount, context) =>
+            {
+                // Optional: Log the retry attempt
+                Console.WriteLine($"Retry {retryCount} after {timeSpan.Seconds} seconds due to: {exception.Message}");
+            });
 }

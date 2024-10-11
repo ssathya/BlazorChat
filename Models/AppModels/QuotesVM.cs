@@ -1,4 +1,4 @@
-﻿namespace BlazorChat.Models;
+﻿namespace Models.AppModels;
 
 public class QuotesVM
 {
@@ -13,7 +13,7 @@ public class QuotesVM
     public DateTime ReportingTime { get; set; }
 
     public static implicit operator QuotesVM(Quote quote)
-    {        
+    {
         QuotesVM quotesVM = new()
         {
             CurrentPrice = (decimal)(quote.CurrentPrice ?? 0.0),
@@ -27,6 +27,6 @@ public class QuotesVM
         };
         return quotesVM;
     }
-    
+
 
 }
