@@ -4,8 +4,10 @@ using System.ComponentModel;
 
 namespace BlazorChat.Services;
 
-public class NewsPlugin
+public class NewsPlugin(ILogger<NewsPlugin> logger)
 {
+    private readonly ILogger<NewsPlugin> logger = logger;
+
     [KernelFunction("get_news")]
     [Description("Gets news item for today's date")]
     [return: Description("A list of current news stories.")]
@@ -16,11 +18,26 @@ public class NewsPlugin
         {
             category = "homepage";
         }
-        // Get the current date)
-        var reader = new FeedReader();
-        IEnumerable<FeedItem> feedItems = reader.RetrieveFeed($"https://rss.nytimes.com/services/xml/rss/nyt/{category}.xml")
-            .Take(6);
-        return feedItems.ToList();
+
+        try
+        {
+            var reader = new FeedReader();
+            IEnumerable<FeedItem> feedItems = reader.RetrieveFeed($"https://rss.nytimes.com/services/xml/rss/nyt/{category}.xml")
+                .Take(10);
+            return feedItems.ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving news");
+            FeedItem errorItem = new()
+            {
+                Id = "",
+                Title = "Error reading news feed",
+                Summary = "Please try later",
+                Uri = new Uri("https://berniesanders.com/500/")
+            };
+            return [errorItem];
+        }
     }
 
     [KernelFunction("news_categories")]
