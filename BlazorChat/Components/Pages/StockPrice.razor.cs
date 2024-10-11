@@ -57,20 +57,28 @@ public partial class StockPrice
         responseToDisplay.AppendLine(Markdown.ToHtml($"> *{UserInput}*\n\n"));
         responseToDisplay.Append("</div>");
         StringBuilder tmpBuffer = new();
-        var chunks = await retryPolicy.ExecuteAsync(() =>
+        try
         {
-            return Task.FromResult(ChatCompletionService!.GetStreamingChatMessageContentsAsync(History, settings!, Kernel!));
-        });
-        await foreach (var chunk in chunks)
-        {
-            tmpBuffer.Append(chunk);
+            var chunks = await retryPolicy.ExecuteAsync(() =>
+            {
+                return Task.FromResult(ChatCompletionService!.GetStreamingChatMessageContentsAsync(History, settings!, Kernel!));
+            });
+            await foreach (var chunk in chunks)
+            {
+                tmpBuffer.Append(chunk);
+            }
+            if (ChatCompletionService!.Attributes.ContainsKey("Usage"))
+            {
+                responseToDisplay.Append($"<br/>Usage: {ChatCompletionService.Attributes["Usage"]}");
+            }
+            responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString(), pipeline));
+            responseToDisplay.Append("\n<br/>");
         }
-        if (ChatCompletionService!.Attributes.ContainsKey("Usage"))
+        catch (Exception ex)
         {
-            responseToDisplay.Append($"<br/>Usage: {ChatCompletionService.Attributes["Usage"]}");
+            Logger?.LogError(ex, "Error processing user input");
+            responseToDisplay.Append("/n<p>Unexpected error occurred. Please try again later.</p>\n<br/>");
         }
-        responseToDisplay.Append(Markdown.ToHtml(tmpBuffer.ToString(), pipeline));
-        responseToDisplay.Append("\n<br/>");
         StateHasChanged();
 
         History.AddAssistantMessage(tmpBuffer.ToString());

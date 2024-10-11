@@ -3,6 +3,8 @@ using BlazorChat.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Models.DBModels;
+using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,35 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var config = builder.Configuration;
+//Logging
+StringBuilder filePath = new();
+filePath.Append(Path.GetTempPath() + "/");
+filePath.Append("BlazorChat-.log");
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(config)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(filePath.ToString(), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3)
+    .CreateLogger();
+builder.Services.AddLogging(c =>
+{
+    c.SetMinimumLevel(LogLevel.Debug);
+    c.AddSerilog(Log.Logger);
+});
+//Caching
+builder.Services.AddOutputCache(cfg =>
+{
+    cfg.AddBasePolicy(bldr =>
+    {
+        bldr.With(r => r.HttpContext.Request.Path.StartsWithSegments("/"));
+        bldr.Expire(TimeSpan.FromMinutes(5));
+    });
+    cfg.AddPolicy("ShortCache", bldr =>
+    {
+        bldr.Expire(TimeSpan.FromSeconds(25));
+    });
+});
+Log.Logger.Information("Application Starting");
 //Connect to service
 builder.Services.AddKernel();
 try

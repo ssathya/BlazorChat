@@ -72,9 +72,13 @@ public class StockServicePlugin(ILogger<StockServicePlugin> logger, IConfigurati
             : await context.TickerSlopes.Where(r => r.Period == Period.Monthly)
             .OrderBy(r => r.SlopeResults.OrderBy(x => x.Date).Last().Slope)
             .Take(maxStocksToReturn)
+            .AsNoTracking()
             .ToListAsync();
         List<string> tickers = requestedResult.Select(r => r.Ticker).ToList();
-        List<IndexComponent> indexComponents = await context.IndexComponents.Where(r => tickers.Contains(r.Ticker)).ToListAsync();
+        List<IndexComponent> indexComponents = await context.IndexComponents
+            .Where(r => tickers.Contains(r.Ticker))
+            .AsNoTracking()
+            .ToListAsync();
         List<TickerSlopeView> tickerSlopeViews = [];
         foreach (TickerSlope tickerSlope in requestedResult)
         {
