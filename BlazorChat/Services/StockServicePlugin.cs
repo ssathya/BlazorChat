@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClosedXML.Excel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Models.AppModels;
 using Models.DBModels;
@@ -11,11 +12,35 @@ public class StockServicePlugin(ILogger<StockServicePlugin> logger, IConfigurati
     , HttpClient httpClient
     , IDbContextFactory<BlazorChatContext> contextFactory)
 {
-    private const string FinnhubIoQuoteUrl = "https://finnhub.io/api/v1/quote?symbol={ticker}&token={apiKey}";
+    #region Private Fields
+
+    private const string FinnHubIoQuoteUrl = "https://finnhub.io/api/v1/quote?symbol={ticker}&token={apiKey}";
     private readonly IConfiguration configuration = configuration;
     private readonly IDbContextFactory<BlazorChatContext> contextFactory = contextFactory;
     private readonly HttpClient httpClient = httpClient;
     private readonly ILogger<StockServicePlugin> logger = logger;
+
+    #endregion Private Fields
+
+    #region Public Methods
+
+    [KernelFunction("list_best_performing_stocks")]
+    [Description("Get a list of investment worthy stocks")]
+    [return: Description("List 10 stocks selected by recursive computation")]
+    public string GetBestPerformingStocks(Kernel kernel)
+    {
+        List<FileInfo> files = GetListOfExcelFiles();
+        if (files.Count == 0)
+        {
+            return "System error";
+        }
+        files = files.Where(f => f.FullName.Contains(@"RecursiveSelection.xlsx")).ToList();
+        string sheetToUse = "RecursiveSelection";
+        ReadGeneratedExcelFile(files, sheetToUse, out XLWorkbook workBook,
+            out List<StockExcel> stockExcels);
+        var returnMsg = JsonSerializer.Serialize(stockExcels, new JsonSerializerOptions { WriteIndented = true });
+        return returnMsg;
+    }
 
     [KernelFunction("get_stock_quote")]
     [Description("Get the latest stock quote for a given ticker")]
@@ -27,7 +52,7 @@ public class StockServicePlugin(ILogger<StockServicePlugin> logger, IConfigurati
         {
             return "Could not find api key for Quotes provider";
         }
-        var urlToUse = FinnhubIoQuoteUrl.Replace("{apiKey}", apiKey).Replace("{ticker}", ticker);
+        var urlToUse = FinnHubIoQuoteUrl.Replace("{apiKey}", apiKey).Replace("{ticker}", ticker);
         HttpResponseMessage responseMessage = await httpClient.GetAsync(urlToUse);
         if (!responseMessage.IsSuccessStatusCode)
         {
@@ -49,52 +74,87 @@ public class StockServicePlugin(ILogger<StockServicePlugin> logger, IConfigurati
     [KernelFunction("list_stocks_by_performance")]
     [Description("Get a list of the top performing stocks for a given period")]
     [return: Description("List of the top 20 performing stocks for the given period")]
-    public async Task<string> ListStocksByPerformance(Kernel kernel,
-        [Description("Period to get the top performing stocks for. " +
-        "Valid values are: m for montly, q for quarterly, h for half-yearly, y for yearly")] string period,
-        [Description("True to get the best performing stocks, false to get the worst performing stocks")] bool bestOrWorse)
+    public string ListStocksByPerformance(Kernel kernel,
+       [Description("Period to get the top performing stocks for. " +
+        "Valid values are: m for monthly, q for quarterly, h for half-yearly, y for yearly")] string period,
+       [Description("True to get the best performing stocks, false to get the worst performing stocks")] bool bestOrWorse)
     {
-        const int maxStocksToReturn = 20;
-        Period periodToUse = period.ToLower().Trim() switch
+        List<FileInfo> files = GetListOfExcelFiles();
+        if (files.Count == 0)
         {
-            "y" => Period.Yearly,
-            "h" => Period.HalfYearly,
-            "q" => Period.Quarterly,
-            "m" => Period.Monthly,
-            _ => Period.Monthly,
-        };
-        using BlazorChatContext context = await contextFactory.CreateDbContextAsync();
-        List<TickerSlope> requestedResult = bestOrWorse
-            ? await context.TickerSlopes.Where(r => r.Period == periodToUse)
-            .OrderByDescending(r => r.SlopeResults.OrderBy(x => x.Date).Last().Slope)
-            .Take(maxStocksToReturn)
-            .ToListAsync()
-            : await context.TickerSlopes.Where(r => r.Period == Period.Monthly)
-            .OrderBy(r => r.SlopeResults.OrderBy(x => x.Date).Last().Slope)
-            .Take(maxStocksToReturn)
-            .AsNoTracking()
-            .ToListAsync();
-        List<string> tickers = requestedResult.Select(r => r.Ticker).ToList();
-        List<IndexComponent> indexComponents = await context.IndexComponents
-            .Where(r => tickers.Contains(r.Ticker))
-            .AsNoTracking()
-            .ToListAsync();
-        List<TickerSlopeView> tickerSlopeViews = [];
-        foreach (TickerSlope tickerSlope in requestedResult)
+            return "System error";
+        }
+        foreach (FileInfo file in files)
         {
-            tickerSlopeViews.Add(tickerSlope);
-            IndexComponent? indexComponent = indexComponents.FirstOrDefault(r => r.Ticker == tickerSlope.Ticker);
-            if (indexComponent is not null)
+            if (file.FullName.Contains(@"RecursiveSelection.xlsx"))
             {
-                tickerSlopeViews.Last().CompanyName = indexComponent.CompanyName;
-                tickerSlopeViews.Last().Sector = indexComponent.Sector;
-                tickerSlopeViews.Last().SnPWeight = indexComponent.SnPWeight;
-                tickerSlopeViews.Last().NasdaqWeight = indexComponent.NasdaqWeight;
-                tickerSlopeViews.Last().DowWeight = indexComponent.DowWeight;
-                tickerSlopeViews.Last().ListedIndexes = indexComponent.ListedIndexes;
+                files.Remove(file);
+                break;
             }
         }
-        var returnMsg = JsonSerializer.Serialize(tickerSlopeViews, new JsonSerializerOptions { WriteIndented = true });
+        string periodToUse = period.ToLower().Trim() switch
+        {
+            "y" => "Yearly",
+            "h" => "HalfYearly",
+            "q" => "Quarterly",
+            "m" => "Monthly",
+            _ => "Monthly",
+        };
+        ReadGeneratedExcelFile(files, periodToUse, out XLWorkbook workBook,
+            out List<StockExcel> stockExcels);
+        int maxStocksToReturn = 20;
+        stockExcels = bestOrWorse
+            ? stockExcels.OrderByDescending(r => r.EndingSlope)
+                .Take(maxStocksToReturn)
+                .ToList()
+            : stockExcels.OrderBy(r => r.EndingSlope).ToList()
+                .Take(maxStocksToReturn)
+                .ToList();
+        var returnMsg = JsonSerializer.Serialize(stockExcels, new JsonSerializerOptions { WriteIndented = true });
         return returnMsg;
     }
+
+    #endregion Public Methods
+
+    #region Private Methods
+
+    private static List<FileInfo> GetListOfExcelFiles()
+    {
+        var files = new List<FileInfo>();
+        string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string excelDirectory = Path.Combine(homeFolder, "excelDirectory");
+        if (!Directory.Exists(excelDirectory))
+        {
+            return [];
+        }
+        DirectoryInfo directoryInfo = new(excelDirectory);
+        files = directoryInfo.GetFiles("*.xlsx")
+            .OrderByDescending(f => f.CreationTime)
+            .ToList();
+        return files;
+    }
+
+    private static void ReadGeneratedExcelFile(List<FileInfo> files, string sheetToUse,
+            out XLWorkbook workBook, out List<StockExcel> stockExcels)
+    {
+        string fileNameToUse = files.First().FullName;
+        workBook = new(fileNameToUse);
+        IXLWorksheet workSheet = workBook.Worksheet(sheetToUse);
+        IXLRangeRows rows = workSheet.RangeUsed()!.RowsUsed();
+
+        stockExcels = [];
+        foreach (var row in rows.Skip(1))
+        {
+            stockExcels.Add(new StockExcel()
+            {
+                Ticker = row.Cell(1).Value.ToString()!,
+                CompanyName = row.Cell(2).Value.ToString()!,
+                //Period = row.Cell(3).Value.ToString(),
+                StartingSlope = row.Cell(4).GetValue<double>(),
+                EndingSlope = row.Cell(5).GetValue<double>()
+            });
+        }
+    }
+
+    #endregion Private Methods
 }

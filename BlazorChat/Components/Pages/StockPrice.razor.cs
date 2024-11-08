@@ -45,6 +45,12 @@ public partial class StockPrice
         }
     }
 
+    protected void OnClearUserInput()
+    {
+        UserInput = string.Empty;
+        StateHasChanged();
+    }
+
     protected async Task OnSubmitClick()
     {
         if (string.IsNullOrEmpty(UserInput))
