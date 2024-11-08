@@ -20,11 +20,12 @@
             data-bs-target="#helpMsg" aria-expanded="false" aria-controls="helpMsg">
         Help
     </button>
+    <button type="button" class="btn btn-info" @onclick="OnClearUserInput">Clear Input</button>
     <br />
     <div class="collapse" id="helpMsg">
         <p>You can request stock quotes by asking, &quot;Please get me the quote for MSFT&quot; or &quot;Please get me the stock price for IBM, C, JPM, and TSLA; please present the values in a tabular format.&quot;</p>
         <p>For currency conversions, you can ask, &quot;Please convert 200 USD to INR, ZAR, and SZL&quot;. You can also get the values in a table by asking, &quot;Convert 200 USD to INR, ZAR, and SZL and present it as a table&quot;.</p>
-        <p>Certainly! Let&#39;s refine that text to make it clear and concise:</p>
+
         <ol>
             <li>
                 <p>To request stock quotes:</p>
@@ -41,10 +42,16 @@
                 </ul>
             </li>
             <li>
-                <p>Stock perfomance</p>
+                <p>Stock performance</p>
                 <ul>
                     <li>Please fetch the best-performing <b>{yearly|half-yearly|quarterly|monthly}</b> stocks and present the values as a table. Please list only the Ticker, Company Name, Sector, S&P Weight, Nasdaq Weight, Dow Weight, and Computed Slope.</li>
                     <li>Please fetch the worst-performing <b>{yearly|half-yearly|quarterly|monthly}</b> stocks.</li>
+                </ul>
+            </li>
+            <li>
+                <p><b>Best stocks to invest now.</b></p>
+                <ul>
+                    <li>To get the best stocks to invest in ask "Get a list of investment worthy stocks; please present the results as a table for better readability."!</li>
                 </ul>
             </li>
         </ol>

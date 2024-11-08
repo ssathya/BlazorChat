@@ -43,6 +43,12 @@ public partial class Chat
         };
     }
 
+    protected void OnClearUserInput()
+    {
+        UserInput = string.Empty;
+        StateHasChanged();
+    }
+
     protected async Task OnSubmitClick()
     {
         if (string.IsNullOrEmpty(UserInput))

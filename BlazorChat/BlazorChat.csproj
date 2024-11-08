@@ -7,6 +7,8 @@
     <UserSecretsId>1be2ec7d-a130-4fee-8f19-189e0a888b44</UserSecretsId>
   </PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="ClosedXML" Version="0.104.1" />
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.1.1" />
 		<PackageReference Include="Markdig" Version="0.37.0" />
 		<PackageReference Include="Microsoft.SemanticKernel" Version="1.20.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
